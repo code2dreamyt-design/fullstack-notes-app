@@ -1,6 +1,7 @@
 import { User } from "../model/userSchemas.js";
 import { createAccessToken, createRefreshToken, createRegisterToken } from "../utils/tokenGenrator.js";
 import uploadToCloudinary from "../utils/upload.js"
+import { isProd } from "../config/env.js";
 
 const profile = async (req, res) => {
     const { name, dob } = req.body;
@@ -33,10 +34,20 @@ const profile = async (req, res) => {
             },
             { runValidators: true }
         );
-        res.cookie("token",token,{httpOnly:true,secure:false,sameSite:"lax"});
-        res.cookie("refreshToken",refreshToken,{httpOnly:true,secure:false,sameSite:"lax"});
+               res.cookie("token",token,{httpOnly:true,
+                       secure:isProd,
+                       sameSite:isProd?"none":"lax",
+                       maxAge:15*60*1000});
+               res.cookie("refreshToken",refreshToken,
+                   {httpOnly:true,
+                       secure:isProd,
+                       sameSite:isProd?"none":"lax",
+                       maxAge: 7 * 24 * 60 * 60 * 1000
+                   });
 
-        res.clearCookie("registerToken",{httpOnly:true,secure:false,sameSite:"lax"});
+        res.clearCookie("registerToken",{httpOnly:true,
+                        secure:isProd,
+                       sameSite:isProd?"none":"lax",});
          
         return res.status(200).json({ msg: "Profile updated successfully" });
     } catch (error) {

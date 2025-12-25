@@ -3,7 +3,7 @@ import { User } from "../model/userSchemas.js";
 import crypto from "crypto"
 import { createEmailVerificationToken, createRegisterToken } from "../utils/tokenGenrator.js";
 import sendVerificationMail from "../utils/sendEmail.utils.js";
-
+import { isProd } from "../config/env.js";
 export const authLogin = async (req,res,next)=>{
     console.log("1")
     const {email,password} = req.body;
@@ -24,13 +24,16 @@ export const authLogin = async (req,res,next)=>{
         console.log(user.email,user.verificationToken)
         const result = await sendVerificationMail(user.email,verificationToken);
         console.log(result)
-        res.cookie("emailVerificationToken",emailVerificationToken,{httpOnly:true,secure:false,sameSite:"lax"});
+        res.cookie("emailVerificationToken",emailVerificationToken,{httpOnly:true,
+                        secure:isProd,
+                       sameSite:isProd?"none":"lax",});
         return res.status(403).json({reason: "EMAIL_NOT_VERIFIED",msg:"Verify your Email Fisrt"});
     }
 
     if(user.isValid === false){
         const registerToken = createRegisterToken({email:user.email,_id:user._id});
-        res.cookie("registerToken",registerToken,{httpOnly:true,secure:false,sameSite:"lax"});
+        res.cookie("registerToken",registerToken,{httpOnly:true,secure:isProd,
+                       sameSite:isProd?"none":"lax",});
         return res.status(422).json({ reason: "PROFILE_INCOMPLETE",msg:"Complete your profile first"});
     }
     

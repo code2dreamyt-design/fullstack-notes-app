@@ -1,5 +1,5 @@
 import { User } from "../model/userSchemas.js";
-
+import { isProd } from "../config/env.js";
 const logoutController = async (req,res)=>{
     const token = req.cookies.token;
     const refreshToken = req.cookies.refreshToken;
@@ -12,9 +12,15 @@ const logoutController = async (req,res)=>{
                     token:''
                 }}
             );
-            res.clearCookie("token",{httpOnly:true,secure:false,sameSite:"lax"});
-            res.clearCookie("refreshToken",{httpOnly:true,secure:false,sameSite:"lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000});
+            res.clearCookie("token",{
+                httpOnly:true,
+                secure:isProd,
+                sameSite:isProd?"none":"lax",
+                maxAge:15*60*1000});
+            res.clearCookie("refreshToken",{httpOnly:true,
+                secure:isProd,
+                sameSite:isProd?"none":"lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000});
             return res.status(200).json({msg:"logout done"});
 }
 }

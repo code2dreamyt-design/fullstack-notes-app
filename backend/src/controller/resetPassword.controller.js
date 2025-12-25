@@ -3,6 +3,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { sendOtpEmail } from "../utils/sendEmail.utils.js";
 import { createPasswordResetToken } from "../utils/tokenGenrator.js";
+import { isProd } from "../config/env.js";
 
 // ==============================
 // SEND OTP CONTROLLER
@@ -76,8 +77,8 @@ export const sendOTP = async (req, res) => {
 
       res.cookie("resetToken", resetToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax"
+        secure:isProd,
+        sameSite:isProd?"none":"lax"
       });
 
       return res.status(200).json({
@@ -97,10 +98,9 @@ export const sendOTP = async (req, res) => {
 
       res.cookie("resetToken", resetToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax"
+        secure:isProd,
+         sameSite:isProd?"none":"lax"
       });
-
       return res.status(429).json({
         reason: "COOLDOWN_ACTIVE",
         msg: "Try again after cooldown"
@@ -119,8 +119,8 @@ export const sendOTP = async (req, res) => {
 
       res.cookie("resetToken", resetToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax"
+        secure:isProd,
+         sameSite:isProd?"none":"lax"
       });
 
       return res.status(409).json({
@@ -212,8 +212,8 @@ export const sendOTP = async (req, res) => {
 
     res.cookie("resetToken", resetToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax"
+      secure:isProd,
+      sameSite:isProd?"none":"lax"
     });
 
     return res.status(200).json({
@@ -246,7 +246,7 @@ export const  verifyOTP = async (req,res)=>{
         user.otp =undefined;
      user.otpExp=undefined;
     const resetToken = createPasswordResetToken({email:user.email,_id:user._id});
-    res.cookie("resetToken",resetToken,{httpOnly:true,secure:false,sameSite:"lax"});
+    res.cookie("resetToken",resetToken,{httpOnly:true,secure:isProd, sameSite:isProd?"none":"lax"});
     return res.status(200).json({msg:"OTP Verified"});
      }else{
         return res.status(400).json({msg:"invalid otp"});
@@ -270,7 +270,10 @@ export const resetPassword = async (req,res)=>{
         user.password=hasPass;
         await user.save();
         console.log(user.password);
-        res.clearCookie("resetToken",{httpOnly:true,secure:false,sameSite:"lax"})
+        res.clearCookie("resetToken",{
+          httpOnly:true,
+          secure:isProd,
+          sameSite:isProd?"none":"lax",})
          return res.status(200).json({msg:`${user.name} your pssword has been changed please login v `});
     } catch (error) {
         return res.status(500).json({msg:"Server error"});
@@ -384,8 +387,8 @@ export const resendOTP = async (req, res) => {
 
     res.cookie("resetToken", resetToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax"
+      secure:isProd,
+      sameSite:isProd?"none":"lax",
     });
 
     return res.status(200).json({

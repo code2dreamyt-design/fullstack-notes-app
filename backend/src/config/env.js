@@ -12,3 +12,5 @@ export const mailFrom = process.env.MAIL;
 export const mailPass = process.env.MAIL_PASS;
 export const emailKey = process.env.JWT_EMAIL;
 export const passResetKey = process.env.JWT_RESET;
+export const clientURL = process.env.CLIENT_URL;
+export const isProd = process.env.NODE_ENV==="production";

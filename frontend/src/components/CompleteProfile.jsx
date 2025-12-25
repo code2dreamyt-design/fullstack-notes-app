@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext ,useRef} from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
@@ -9,7 +9,7 @@ const CompleteProfile = () => {
   const { setIsAuth, setLoading } = useContext(AuthContext);
   const [loader, setLoader] = useState(false);
   const [preview, setPreview] = useState(null);
-
+  const fileRef = useRef(null);
   const navigate = useNavigate();
 
   const {
@@ -70,7 +70,7 @@ const CompleteProfile = () => {
         shadow-[0px_2px_30px_green] rounded-2xl p-4 sm:p-6"
       >
         {/* ===== AVATAR PREVIEW ===== */}
-        <div className="flex flex-col justify-center items-center lg:w-[35%]">
+        <div className="flex flex-col justify-center items-center lg:w-[35%]" onClick={()=>fileRef.current?.click()}>
           {preview ? (
             <img
               src={preview}
@@ -134,11 +134,15 @@ const CompleteProfile = () => {
 
           {/* ===== AVATAR ===== */}
           <div className="flex flex-col gap-1">
-            <label className="font-semibold">Avatar</label>
+            <label className="font-semibold"></label>
             <input
               type="file"
-              className="outline-none border-b border-white/60 p-2 text-sm"
-              {...register("avatar", { required: true })}
+              className="outline-none border-b border-white/60 p-2 text-sm hidden"
+              {...register("avatar", { required: true })} 
+              ref={(el)=>{
+                register("avatar").ref(el);
+                fileRef.current=el
+              }}
             />
             {errors.avatar && (
               <span className="text-red-500 text-sm">

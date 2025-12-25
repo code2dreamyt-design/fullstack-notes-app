@@ -1,3 +1,4 @@
+import { isProd } from "../config/env.js";
 import { User } from "../model/userSchemas.js";
 import { createAccessToken, createRefreshToken } from "../utils/tokenGenrator.js";
 
@@ -13,11 +14,14 @@ export const login = async (req,res)=>{
             {$set:{token:refreshToken}},
             {runValidators:true}
         );
-        res.cookie("token",token,{httpOnly:true,secure:false,sameSite:"lax"});
+        res.cookie("token",token,{httpOnly:true,
+                secure:isProd,
+                sameSite:isProd?"none":"lax",
+                maxAge:15*60*1000});
         res.cookie("refreshToken",refreshToken,
             {httpOnly:true,
-                secure:false,
-                sameSite:"lax",
+                secure:isProd,
+                sameSite:isProd?"none":"lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
         return res.status(200).json({msg:"Login successs"});

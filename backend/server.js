@@ -14,17 +14,15 @@ import userDetailsRoute from "./src/Routers/userDetails.route.js";
 import emailVerifyRoute from "./src/Routers/emailVerify.route.js";
 import passwordReset from "./src/Routers/resetPass.route.js";
 import updateProfile from "./src/Routers/updateProfile.routes.js";
-connectDB();
-// mongoose.connection.once("open",()=>{
-//     initGridFS();
-// })
+import { clientURL } from "./src/config/env.js";
 
-dotenv.config();  //make the env available
+dotenv.config(); 
+connectDB(); //make the env available
 const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:clientURL,
     credentials:true
 }));
 
@@ -32,6 +30,22 @@ app.use(express.json()); //parse the simple json data like plain application/jso
 
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  console.log(
+    `[REQ] ${req.method} ${req.originalUrl}`,
+    "Origin:",
+    req.headers.origin || "none"
+  );
+  next();
+});
+
+app.get("/health",async (req,res)=>{
+  return res.status(200).json({
+    status:"ok",
+    uptime:process.uptime(),
+    timeStamp:new Date().toISOString()
+  });
+});
 app.use('/register',registerRoute);
 
 app.use('/login',loginRoute);
