@@ -4,7 +4,7 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import Loader from "./Loader";
-import axios from "axios";
+import api from '../api/api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,11 +24,7 @@ const Login = () => {
   const handleLogin = async (data) => {
     setloading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/login",
-        data,
-        { withCredentials: true }
-      );
+      const response = await api.post("/login", data);
       const res = response.data;
       setMsg(res.msg);
       setIsAuth(true);

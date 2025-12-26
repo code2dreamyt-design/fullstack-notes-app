@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mail from '/images/mail.png';
-import axios from 'axios';
+import api from '../api/api';
 import Loader from './Loader';
 
 const EmailVerification = () => {
@@ -49,10 +49,7 @@ const EmailVerification = () => {
   const verificationStatus = async () => {
     setloading(true);
     try {
-      await axios.get(
-        "http://localhost:3000/verifyemail/auth/emailstatus",
-        { withCredentials: true }
-      );
+      await api.get("/verifyemail/auth/emailstatus");
       navigate("/completeprofile");
     } catch (error) {
       setloading(false);
@@ -63,10 +60,7 @@ const EmailVerification = () => {
   const resendEmail = async () => {
     setloading(true);
     try {
-      const response = await axios.get(
-        "http://localhost:3000/verifyemail/auth/resend",
-        { withCredentials: true }
-      );
+      const response = await api.get("/verifyemail/auth/resend");
       setMsg(response.data.msg);
     } catch (error) {
       setloading(false);

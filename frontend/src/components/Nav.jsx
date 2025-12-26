@@ -4,7 +4,7 @@ import { AuthContext } from '../contexts/AuthContext'
 import { Link,useNavigate } from 'react-router-dom'
 import UserProfile from './UserProfile'
 import toplogo from '/images/noteapplogo.svg'
-import dummyProf from '/images/profile.png'
+import api from '../api/api'
 const Nav = () => {
   const {isAuth,setIsAuth} = useContext(AuthContext);
   
@@ -18,18 +18,15 @@ const Nav = () => {
   const makeLogout = async ()=>{
     
     try {
-      const fetchReq  = await fetch("http://localhost:3000/logout",{
-        method:"GET",
-        credentials:"include"
-      });
-      const res = await fetchReq.text();
-      if(fetchReq.ok){
+      const response  = await api.get("/logout");
+      
        setIsAuth(false);
         navigate("/login");
-        console.log(res);
-      }
+        console.log(response.data?.msg);
+      
     } catch (error) {
-      console.log(error)
+      console.log(error.response.status)
+      console.log(error.response?.data?.msg)
     }
   }
   return (

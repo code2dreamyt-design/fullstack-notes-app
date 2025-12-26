@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios"
+import api from '../api/api';
 const ForgetPass = () => {
   const navigate = useNavigate();
   const {
@@ -12,9 +12,7 @@ const ForgetPass = () => {
   const submit = async (data) => {
     console.log("FORM 1:", data);
     try {
-      const response = await axios.post("http://localhost:3000/reset/sendOTP",data,{
-        withCredentials:true
-      });
+      const response = await api.post("/reset/sendOTP",data);
       console.log(response.data.msg);
       navigate("/verifyotp");
     } catch (error) {

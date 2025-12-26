@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 import Loader from './Loader';
+import api from '../api/api';
 const VerifyOTP = () => {
   const [resend,setResend] = useState(false);
   const [loader,setLoader] = useState(false);
@@ -30,15 +30,11 @@ const VerifyOTP = () => {
     return ()=>clearInterval(interval)
   },[timeLeft]);
 
-  const setTimer = async ()=>{
-    
-  }
+ 
 
   const getTimer = async ()=>{
     try {
-      const response = await axios.get('http://localhost:3000/reset/getTimer',{
-      withCredentials:true
-    });
+      const response = await api.get('/reset/getTimer');
     setTimeLeft(0);
     } catch (error) {
 
@@ -64,7 +60,7 @@ const VerifyOTP = () => {
   const verifyOTP = async (data) => {
     setLoader(true);
     try {
-      const response = await axios.post( 'http://localhost:3000/reset/verifyotp',data,{
+      const response = await api.post( '/reset/verifyotp',data,{
       withCredentials:true 
       });
 
@@ -79,7 +75,7 @@ const VerifyOTP = () => {
   const resendOtp = async ()=>{
     setLoader(true);
     try {
-      const response = await axios.get("http://localhost:3000/reset/resendotp",{withCredentials:true});
+      const response = await api.get("/reset/resendotp",{withCredentials:true});
       console.log(response.data);
       ;
       getTimer();

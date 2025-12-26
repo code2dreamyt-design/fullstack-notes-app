@@ -2,59 +2,28 @@ import React, { useEffect, useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import Loader from './Loader';
-
+import api from '../api/api';
 const ProtectedRoute = ({ children }) => {
   const { isAuth, setIsAuth, loading, setLoading } = useContext(AuthContext);
 
-  const tokenRefresh = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/refreshToken', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      const res = await response.json();
-      console.log('Refresh response:', res);
+const checkRefresh = async () => {
+  try {
+    // Step 1: validate access token (or refresh automatically)
+    const response = await api.post("/checkToken");
 
-      if (response.ok) {
-        setIsAuth(true);
-        setLoading(false);
-        return true;
-      } else {
-        setIsAuth(false);
-        setLoading(false);
-        return false;
-      }
-    } catch (error) {
-      console.error('Refresh error:', error);
-      setIsAuth(false);
-      setLoading(false);
-      return false;
-    }
-  };
+    console.log("Access token valid or refreshed:", response.data);
+    setIsAuth(true);
+  } catch (error) {
+    console.log(
+      "Auth check failed:",
+      error.response?.data?.msg || error.message
+    );
+    setIsAuth(false);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const checkRefresh = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/checkToken', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      const res = await response.json();
-
-      if (response.ok) {
-        console.log('Access token valid:', res);
-        setIsAuth(true);
-        setLoading(false);
-      } else {
-        console.log('Access token expired, trying refresh...');
-        const refreshed = await tokenRefresh();
-        if (!refreshed) setIsAuth(false);
-      }
-    } catch (error) {
-      console.error('Check error:', error);
-      setIsAuth(false);
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     checkRefresh();

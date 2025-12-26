@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Loader from "./Loader";
-
+import api from "../api/api";
 const Addnotes = ({
   getNotes,
   setIsExpanded,
@@ -18,34 +18,31 @@ const Addnotes = ({
     defaultValues: { title: "" },
   });
 
-  const submitNote = async (data) => {
-    try {
-      const response = await fetch(
-        `${
-          edit && note
-            ? `http://localhost:3000/notes/${note._id}`
-            : "http://localhost:3000/notes"
-        }`,
-        {
-          method: `${edit && note ? "PUT" : "POST"}`,
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
 
-      const res = await response.json();
+const submitNote = async (data) => {
+  try {
+    const endpoint = edit && note
+      ? `/notes/${note._id}`
+      : "/notes";
 
-      if (response.ok) {
-        getNotes();
-        reset({ title: "", content: "" });
-        setIsExpanded(false);
-        setEdit(false);
-      }
-    } catch (error) {
-      console.log(error);
+    const response = edit && note
+      ? await api.put(endpoint, data)
+      : await api.post(endpoint, data);
+
+    if (response.status === 200 || response.status === 201) {
+      getNotes();
+      reset({ title: "", content: "" });
+      setIsExpanded(false);
+      setEdit(false);
     }
-  };
+  } catch (error) {
+    console.error(
+      "Submit note failed:",
+      error.response?.data || error.message
+    );
+  }
+};
+
 
   useEffect(() => {
     if (edit && note) {

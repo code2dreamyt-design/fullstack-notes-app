@@ -1,24 +1,21 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import api from '../api/api';
 const Home = () => {
   const navigate = useNavigate();
 
   const checkMe = async () => {
     try {
-      const res = await fetch('http://localhost:3000/login/checkme', {
-        method: "POST",
-        credentials: "include"
-      });
+      const response = await api.post('/login/checkme', {});
 
-      const result = await res.json();
 
-      if (res.ok) {
+      
         navigate("/notes");
-        console.log(result);
-      }
+        console.log(response.data?.msg);
+    
     } catch (error) {
-      console.log(error);
+      console.log(error.response.status);
+      console.log(error.response?.data?.msg)
     }
   };
 

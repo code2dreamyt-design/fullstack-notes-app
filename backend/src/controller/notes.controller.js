@@ -3,7 +3,7 @@ import { Note } from "../model/notes.schema.js";
 export const getNotesController = async(req,res)=>{
     const {search,fav,sort,page,limit} = req.query;
     let filter = {userId:req.user._id};
-
+    console.log(11);
     if(search){
         filter.$or = [
             {title:{$regex:search,$options:"i"}},
@@ -23,8 +23,10 @@ export const getNotesController = async(req,res)=>{
     const totalDoc = await Note.countDocuments({userId:req.user._id});
     const totalPages = Math.ceil(totalDoc/limitVal);
     console.log(totalDoc)
+    console.log(12);
     if(totalDoc === 0){ 
-        return res.status(404).json({msg:"Notes Empty"});
+        console.log(13);
+        return res.status(404).json({msg:"You Don't have any notes"});
     }
     else if(totalPages<pg){
         pg=totalPages;
@@ -32,8 +34,12 @@ export const getNotesController = async(req,res)=>{
     
     let skip = (pg-1) * limitVal;
     const notes = await Note.find(filter).sort(sortOpt).skip(skip).limit(limitVal);
-
-    return res.status(200).json(notes);
+console.log(14);
+    return res.status(200).json({
+        notes,
+        page:pg,
+        totalPages
+    });
 ;}
 
 

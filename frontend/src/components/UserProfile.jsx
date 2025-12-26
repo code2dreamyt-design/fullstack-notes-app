@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import dummyProf from '/images/profile.png';
 import Profile from './Profile';
-import axios from 'axios';
 import Loader from './Loader';
+import api from '../api/api';
 
 const UserProfile = ({ makeLogout }) => {
   const [user, setUser] = useState({});
@@ -12,10 +12,7 @@ const UserProfile = ({ makeLogout }) => {
   const getProfile = async () => {
     try {
       setLoader(true);
-      const res = await axios.get(
-        'http://localhost:3000/userDetails',
-        { withCredentials: true }
-      );
+      const res = await api.get('/userDetails');
       setUser(res.data);
     } catch (error) {
       console.log(error?.response?.status);

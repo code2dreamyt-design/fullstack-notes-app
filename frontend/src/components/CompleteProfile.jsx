@@ -2,9 +2,8 @@ import React, { useState, useEffect, useContext ,useRef} from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
-import axios from "axios";
 import Loader from "./Loader";
-
+import api from "../api/api";
 const CompleteProfile = () => {
   const { setIsAuth, setLoading } = useContext(AuthContext);
   const [loader, setLoader] = useState(false);
@@ -40,11 +39,7 @@ const CompleteProfile = () => {
     formData.append("avatar", data.avatar[0]);
 
     try {
-      const res = await axios.post(
-        "http://localHost:3000/profile",
-        formData,
-        { withCredentials: true }
-      );
+      const response = await api.post("/profile",formData);
 
       setLoading(false);
       setIsAuth(true);

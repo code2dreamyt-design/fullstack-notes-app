@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import Addnotes from "./Addnotes.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Loader from "./Loader";
+import api from "../api/api.js";
 
 const Notes = () => {
   const sectionRef = useRef(null);
-
   const [notes, setNotes] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -15,14 +13,11 @@ const Notes = () => {
   const [msg, setMsg] = useState("");
   const [searchVal, setSearchVal] = useState("");
   const [sortOpt, setSortOpt] = useState("latest");
-  const [addFilter, setAddFilter] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [fav, setFav] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [url, setUrl] = useState("http://localhost:3000/notes");
-
-  const navigate = useNavigate();
-
+  const [url, setUrl] = useState("/notes");
+  const [page,setPage] = useState(0);
+  const [totalPages,setTotalPages] = useState(0); 
   const btns = [
     { id: 1, lable: "Latest", btnValue: "latest" },
     { id: 2, lable: "Oldest", btnValue: "oldest" },
@@ -36,61 +31,51 @@ const Notes = () => {
   const handleSearch = () => {
     if (searchVal !== "") {
       setUrl(
-        `http://localhost:3000/notes?search=${searchVal}&&sort=${sortOpt}&&isFav=${fav}`
+        `/notes?search=${searchVal}&&sort=${sortOpt}`
       );
       setSearchVal("");
       setIsSearch(false);
-      setAddFilter(false);
     } else {
-      setUrl("http://localhost:3000/notes");
+      setUrl("/notes");
     }
   };
 
   const getNotes = async () => {
     setLoader(true);
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        credentials: "include",
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setNotes(data);
-      } else {
-        setNotes([]);
-        setMsg("You have no notes");
-      }
+      const response = await api.get(url);
+      console.log(response.data)
+        setNotes(response.data?.notes);
+        setPage(response.data?.page);
+        setTotalPages(response.data?.totalPages);
     } catch (error) {
+      console.log(error.response?.data?.msg);
+      console.log(error.response.status);
       setNotes([]);
-      setMsg("Error fetching notes");
+      setMsg(error.response?.data?.msg);
     } finally {
       setLoader(false);
     }
   };
 
   const deleteNote = async (id) => {
+    setPage(0);
     try {
-      const response = await fetch(`http://localhost:3000/notes/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (response.ok) {
+      const response = await api.delete(`/notes/${id}`);
+      console.log(response.data)
         getNotes();
-      }
+      
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data?.msg);
+      console.log(error.response.status);
     }
   };
 
   const handleFav = async (id) => {
     setLoader(true);
     try {
-      await axios.patch(
-        `http://localhost:3000/notes/${id}`,
-        {},
-        { withCredentials: true }
-      );
+      await api.patch(
+        `/notes/${id}` );
 
       setNotes((prev) =>
         prev.map((note) =>
@@ -107,6 +92,19 @@ const Notes = () => {
   useEffect(() => {
     getNotes();
   }, [url]);
+const handlePre = () => {
+  if (page > 1) {
+    const pg = page - 1;
+    setUrl(`/notes?page=${pg}`);
+  }
+};
+
+const handleNext = () => {
+  if (page < totalPages) {
+    const pg = page + 1;
+    setUrl(`/notes?page=${pg}`);
+  }
+};
 
   return (
     <>
@@ -129,14 +127,14 @@ const Notes = () => {
             />
 
             <button
-              className="h-9 w-9 rounded-lg bg-red-500"
+              className="h-9 w-9 rounded-lg bg-red-500 cursor-pointer hover:shadow-[0px_0px_20px_white]"
               onClick={handleSearch}
             >
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
 
             <button
-              className="text-white"
+              className="text-white cursor-pointer hover:shadow-[0px_0px_20px_white]"
               onClick={() => setIsSearch(false)}
             >
               <i className="fa-solid fa-xmark"></i>
@@ -152,7 +150,7 @@ const Notes = () => {
                     selected === btn.id
                       ? "bg-red-500 text-white"
                       : "bg-white text-black"
-                  }`}
+                  } cursor-pointer hover:shadow-[0px_0px_20px_white]`}
                 onClick={() => {
                   setSelected((p) => (p === btn.id ? null : btn.id));
                   setSortOpt((p) =>
@@ -199,9 +197,9 @@ const Notes = () => {
                   <p className="text-sm mt-1">{note.content}</p>
                 </div>
 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 ">
                   <button
-                    className="fa-solid fa-circle-xmark text-red-600"
+                    className="fa-solid fa-circle-xmark text-red-600 cursor-pointer hover:text-amber-200 p-1"
                     onClick={() => deleteNote(note._id)}
                   />
 
@@ -210,12 +208,12 @@ const Notes = () => {
                       note.isFav
                         ? "fa-solid fa-heart"
                         : "fa-regular fa-heart"
-                    } text-red-600`}
+                    } text-red-600 cursor-pointer hover:text-amber-200 p-1`}
                     onClick={() => handleFav(note._id)}
                   />
 
                   <button
-                    className="fa-solid fa-pen text-blue-600"
+                    className="fa-solid fa-pen text-blue-600 cursor-pointer hover:text-amber-200 p-1"
                     disabled={edit}
                     onClick={() => {
                       setIsExpanded(true);
@@ -239,19 +237,19 @@ const Notes = () => {
           <div className="mx-auto max-w-md flex justify-between items-center p-2 rounded-2xl
           bg-[linear-gradient(310deg,rgba(9,15,13,1)_0%,rgba(1,1,1,1)_65%,rgba(0,163,0,1)_100%)]">
 
-            <button onClick={handleSearch}>
+            <button className="cursor-pointer hover:shadow-[0px_0px_20px_white] w-8 rounded-2xl" onClick={handleSearch}>
               <i className="fa-solid fa-house"></i>
             </button>
 
-            <button onClick={() => setIsSearch(true)}>
+            <button className="cursor-pointer hover:shadow-[0px_0px_20px_white] w-8 rounded-2xl" onClick={() => setIsSearch(true)}>
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
 
-            <button onClick={() => setUrl("http://localhost:3000/notes?fav=true")}>
+            <button className="cursor-pointer hover:shadow-[0px_0px_20px_white] w-8 rounded-2xl" onClick={() => setUrl("/notes?fav=true")}>
               <i className="fa-solid fa-heart text-red-600"></i>
             </button>
 
-            <button
+            <button className="cursor-pointer hover:shadow-[0px_0px_20px_white] w-8 rounded-2xl"
               onClick={() => {
                 setIsExpanded(!isExpanded);
                 setEdit(false);
@@ -261,6 +259,14 @@ const Notes = () => {
               <i className={`fa-solid fa-${isExpanded ? "xmark" : "plus"}`}></i>
             </button>
           </div>
+        </div>
+        <div className={`w-[90%]  text-black flex justify-around items-center ${totalPages===1?"hidden":"block"}`}>
+          <button className={`w-8 p-1 cursor-pointer hover:shadow-[0px_0px_20px_white] bg-cyan-300 rounded-full `} disabled={page===1?true:false}  onClick={handlePre}>
+            <i className="fa-solid fa-arrow-left"></i>
+          </button>
+          <button className="w-8 p-1 cursor-pointer hover:shadow-[0px_0px_20px_white] bg-cyan-300 rounded-full" disabled={page===totalPages?true:false} onClick={handleNext}>
+            <i className="fa-solid fa-arrow-right "></i>
+          </button>
         </div>
       </div>
     </>

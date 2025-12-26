@@ -1,7 +1,7 @@
 import React, { useState,useRef } from 'react';
 import toplogo from '/images/profile.png';
-import axios from "axios"
 import Loader from "./Loader"
+import api from '../api/api';
 const Profile = ({ setProfile, user ,getProfile }) => {
   const [emailInput,setEmailInput] = useState(user.email);
   const [otpInput,setOtpInput] = useState(false)
@@ -24,7 +24,6 @@ const Profile = ({ setProfile, user ,getProfile }) => {
   }
     //photo previewer
   const handleAvatarChange = async (e)=>{
-      console.log("yes")
       const file = e.target.files[0];
       if(!file) return;
       setLoader(true);
@@ -32,7 +31,7 @@ const Profile = ({ setProfile, user ,getProfile }) => {
       formdata.append("avatar",file);
       formdata.append("publicId",user.avatar.publicId)
       try {
-        const result = await axios.post("http://localhost:3000/updateProfile/avatar",formdata,{withCredentials:true});
+        const result = await api.post("/updateProfile/avatar",formdata,{withCredentials:true});
         getProfile();
         console.log(result.data)
       } catch (error) {
@@ -43,7 +42,7 @@ const Profile = ({ setProfile, user ,getProfile }) => {
   const updateEmail = async ()=>{
     console.log(emailInput)
     try {
-      const response = await axios.post("http://localhost:3000/updateProfile/sendOtp",{email:emailInput},{withCredentials:true});
+      const response = await api.post("/updateProfile/sendOtp",{email:emailInput},{withCredentials:true});
       setOtpInput(true);
       console.log(response.data.msg);
     } catch (error) {
@@ -53,7 +52,7 @@ const Profile = ({ setProfile, user ,getProfile }) => {
 
   const verifyOtp = async ()=>{
     try {
-      const response = await axios.post("http://localhost:3000/updateProfile/verifyOtp",{otp},{withCredentials:true});
+      const response = await api.post("/updateProfile/verifyOtp",{otp});
       getProfile()
       console.log(response.data.msg);
     } catch (error) {

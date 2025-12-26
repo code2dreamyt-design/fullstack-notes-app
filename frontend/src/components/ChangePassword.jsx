@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Loader from "./Loader";
-
+import api from "../api/api";
 const ChangePassword = () => {
   const [eye, setEye] = useState("fa-eye");
   const [type, setType] = useState("password");
@@ -40,28 +40,24 @@ const ChangePassword = () => {
     }
   };
 
-  const changePassword = async (data) => {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/reset/resetpass",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-          credentials: "include",
-        }
-      );
 
-      const result = await response.json();
+const changePassword = async (data) => {
+  try {
+    const response = await api.post("/reset/resetpass", data);
 
-      if (response.ok) {
-        setMsg(result.msg);
-        setStatus(true);
-      }
-    } catch (error) {
-      console.log(error.msg);
-    }
-  };
+    setMsg(response.data.msg);
+    setStatus(true);
+  } catch (error) {
+    const message =
+      error.response?.data?.msg ||
+      "Password reset failed. Please try again.";
+
+    console.error("Change password error:", message);
+    setMsg(message);
+    setStatus(false);
+  }
+};
+
 
   return (
     <div className="relative w-full max-w-3xl mx-auto px-4 sm:px-6">

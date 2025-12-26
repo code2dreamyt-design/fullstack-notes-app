@@ -9,10 +9,10 @@ dotenv.config();
 export const validateToken = async (req,res,next)=>{
     const token = req.cookies.token;
     const refreshToken = req.cookies.refreshToken;
-    console.log("1")
+    
     if(!token || !refreshToken) return res.status(401).json({msg:"token not found try again"});
     try {
-        console.log("2")
+       
         const accessPayload = jwt.verify(token,secKey);
         req.user = accessPayload;
         return next();
@@ -21,7 +21,7 @@ export const validateToken = async (req,res,next)=>{
     }
     let payload;
     try {
-        console.log("3");
+        
         payload = jwt.verify(refreshToken,refreshKey);
         //req.user = payload;
     } catch (error) {
@@ -47,7 +47,7 @@ export const validateToken = async (req,res,next)=>{
         res.cookie("token",newToken,{httpOnly:true,
                         secure:isProd,
                         sameSite:isProd?"none":"lax",
-                        maxAge:15*60*1000});
+                        maxAge:7*24*60*60*1000});
         res.cookie("refreshToken",newRefreshToken,
                     {httpOnly:true,
                         secure:isProd,

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import glogo from "/public/images/google logo.png";
 import { useForm } from "react-hook-form";
 import Loader from "./Loader";
-import axios from "axios";
+import api from "../api/api";
 const Register = () => {
   const [eye, setEye] = useState("fa-eye");
   const [type, setType] = useState("password");
@@ -43,7 +43,7 @@ const Register = () => {
     setloading(true);
     console.log(data);
     try {
-      const response = await axios.post("http://localhost:3000/register",data,{withCredentials:true});
+      const response = await api.post("/register",data);
       const res = response.data;
       console.log(res);
       navigate("/emailverify");
