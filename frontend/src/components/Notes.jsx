@@ -260,7 +260,7 @@ const handleNext = () => {
             </button>
           </div>
         </div>
-        <div className={`w-[90%]  text-black flex justify-around items-center ${totalPages===1?"hidden":"block"}`}>
+        <div className={`w-[90%]  text-black flex justify-around items-center ${totalPages===1||totalPages===0?"hidden":"block"}`}>
           <button className={`w-8 p-1 cursor-pointer hover:shadow-[0px_0px_20px_white] bg-cyan-300 rounded-full `} disabled={page===1?true:false}  onClick={handlePre}>
             <i className="fa-solid fa-arrow-left"></i>
           </button>

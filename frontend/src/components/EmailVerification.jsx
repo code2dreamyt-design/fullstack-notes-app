@@ -104,7 +104,7 @@ const EmailVerification = () => {
           {/* VERIFY BUTTON */}
           <button
             disabled={!verifiedbtn}
-            className={`w-full max-w-xs h-12 text-base font-semibold rounded-4xl
+            className={`w-full max-w-xs h-12 text-base font-semibold rounded-4xl cursor-pointer
               ${verifiedbtn ? "opacity-100" : "opacity-50"}
               bg-[linear-gradient(264deg,rgba(131,58,180,1)_0%,rgba(253,29,29,1)_63%,rgba(252,176,69,1)_92%)]
             `}
@@ -123,7 +123,7 @@ const EmailVerification = () => {
             </p>
             <button
               disabled={!resend}
-              className={`font-bold text-orange-500
+              className={`font-bold text-orange-500 cursor-pointer
                 ${resend ? "opacity-100" : "opacity-50"}
               `}
               onClick={() => {

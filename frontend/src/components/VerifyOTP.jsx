@@ -34,7 +34,7 @@ const VerifyOTP = () => {
 
   const getTimer = async ()=>{
     try {
-      const response = await api.get('/reset/getTimer');
+     await api.get('/reset/getTimer');
     setTimeLeft(0);
     } catch (error) {
 
@@ -157,7 +157,7 @@ const VerifyOTP = () => {
         <div>
           <button
           disabled={!resend}
-              className={`font-bold text-orange-500 mt-4
+              className={`font-bold text-orange-500 mt-4 cursor-pointer
                 ${resend ? "opacity-100" : "opacity-50"}
               `}   
               onClick={()=>{

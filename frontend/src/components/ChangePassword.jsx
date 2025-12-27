@@ -167,7 +167,7 @@ const changePassword = async (data) => {
           <button
             className="text-black h-12 w-full sm:w-[70%] md:w-[60%]
             bg-[linear-gradient(159deg,rgba(14,105,29,1)_20%,rgba(69,212,47,1)_45%,rgba(26,71,5,1)_72%)]
-            rounded-4xl shadow-[0px_4px_30px_black]"
+            rounded-4xl shadow-[0px_4px_30px_black] cursor-pointer"
             onClick={() => navigate("/login")}
           >
             Login
