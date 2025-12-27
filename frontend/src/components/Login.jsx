@@ -36,8 +36,9 @@ const Login = () => {
       if (error.response?.data?.reason === "PROFILE_INCOMPLETE") {
         navigate("/completeprofile");
       }
-      setloading(false);
+      
       setMsg(error.response?.data?.msg);
+        setloading(false);
       setTimeout(() => setMsg(""), 4000);
     }
   };

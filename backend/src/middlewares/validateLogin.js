@@ -5,11 +5,10 @@ import { createEmailVerificationToken, createRegisterToken } from "../utils/toke
 import sendVerificationMail from "../utils/sendEmail.utils.js";
 import { isProd } from "../config/env.js";
 export const authLogin = async (req,res,next)=>{
-    console.log("1")
+   
     const {email,password} = req.body;
     if(!email || !password) return res.status(400).json({msg:"enter email and password"});
     const user = await User.findOne({email});
-    console.log("1",user)
     if(!user) return res.status(404).json({msg:"user not found"});
 
     const isMatch = await bcrypt.compare(password,user.password);
@@ -23,7 +22,6 @@ export const authLogin = async (req,res,next)=>{
         await user.save();
         console.log(user.email,user.verificationToken)
         const result = await sendVerificationMail(user.email,verificationToken);
-        console.log(result)
         res.cookie("emailVerificationToken",emailVerificationToken,{httpOnly:true,
                         secure:isProd,
                        sameSite:isProd?"none":"lax",});

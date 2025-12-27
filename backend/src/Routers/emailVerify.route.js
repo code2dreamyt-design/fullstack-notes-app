@@ -5,12 +5,13 @@ import crypto from "crypto";
 import verifyEmailToken from "../middlewares/emailVerification.middleware.js";
 import sendVerificationMail from "../utils/sendEmail.utils.js";
 import { createRegisterToken } from "../utils/tokenGenrator.js";
+import { clientURL } from "../config/env.js";
 
 const emailVerifyRoute = express.Router();
-
+    console.log("verify route hit")
 emailVerifyRoute.get("/:token",async (req , res )=>{
  const {token} = req.params;
- console.log("yes i came here 3");
+
  if(!token) return res.status(400).json({msg:"token is not provided"});
  const user = await User.findOne(
     {
@@ -23,10 +24,11 @@ emailVerifyRoute.get("/:token",async (req , res )=>{
  user.verificationToken=undefined;
  user.verficationExpiry=undefined;
  await user.save();
- return res.status(200).send(`<a href=${'http://localhost:5173/login'}>Go to Login Page</a>`)
+ console.log("verify route exit with status ok");
+ return res.status(200).send(`<a href=${`${clientURL}/login`}>Go to Login Page</a>`)
 });
 emailVerifyRoute.get("/auth/emailstatus",verifyEmailToken,async (req,res)=>{
-        console.log("yes i came here 2");
+        
         const user = await User.findById(req.user._id);
         if(user.isVerified===true){ 
             console.log("here is problrm")

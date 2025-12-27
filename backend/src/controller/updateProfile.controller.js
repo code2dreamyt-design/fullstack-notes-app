@@ -9,7 +9,11 @@ export const sendUpdateOtp  = async (req,res)=>{
     const now = new Date();
     if(!email) return res.status(400).json({msg:"Enter email"});
     if(email===req.user.email) return res.status(409).json({msg:"Email is already in use"});
+
     try {
+        const isExist = await User.findOne({email});
+        if(isExist) return res.status(409).json({msg:"This email is already registered"})
+
         const otpDoc = await ProfileOtp.findOne(
             {
                 email,

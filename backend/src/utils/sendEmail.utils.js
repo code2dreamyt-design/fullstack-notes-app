@@ -1,8 +1,9 @@
 import nodemailer from "nodemailer";
 import { mailFrom, mailPass } from "../config/env.js";
+import { backendURL } from "../config/env.js";
 
 const sendVerificationMail = async (email,token)=>{
-  const link = `http://localhost:3000/verifyemail/${token}`;
+  const link = `${backendURL}/verifyemail/${token}`;
 
   const transporter = nodemailer.createTransport({
     service:"gmail",
