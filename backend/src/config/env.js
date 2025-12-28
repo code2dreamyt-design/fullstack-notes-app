@@ -15,3 +15,4 @@ export const passResetKey = process.env.JWT_RESET;
 export const clientURL = process.env.CLIENT_URL;
 export const isProd = process.env.NODE_ENV==="production";
 export const backendURL = process.env.BACKEND_URL;
+export const resendApiKey = process.env.RESEND_API_KEY;

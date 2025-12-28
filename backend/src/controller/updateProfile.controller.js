@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import {ProfileOtp} from "../model/updateProfile.schema.js"
-import { sendOtpEmail } from "../utils/sendEmail.utils.js";
+import  sendEmail  from "../utils/sendEmail.utils.js";
 import { User } from "../model/userSchemas.js";
 import deleteFromCLoudinary from "../utils/deleteFromCloud.js";
 import uploadToCloudinary from "../utils/upload.js";
@@ -30,7 +30,14 @@ export const sendUpdateOtp  = async (req,res)=>{
             "otpChance.time":new Date(now.getTime()+1*60*1000),
             userId:req.user._id
         });
-        sendOtpEmail(email,otp);
+        await sendEmail({
+        to:email,
+        subject:"Email Verification",
+        html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <span>${otp}</span>
+            `
+      });
         return res.status(200).json({ msg: "Otp has been sent" });
 
         console.log(result)    
@@ -72,7 +79,14 @@ export const sendUpdateOtp  = async (req,res)=>{
             if(result.matchedCount!==1){
                 return res.status(500).json({msg:"Server error"});
             }
-            sendOtpEmail(email,otp);
+            await sendEmail({
+            to:email,
+            subject:"Email Verification",
+            html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <span>${otp}</span>
+            `
+      });
             return res.status(200).json({msg:"Otp Has been sent"});
         }
         

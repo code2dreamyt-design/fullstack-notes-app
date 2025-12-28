@@ -1,7 +1,7 @@
 import { User } from "../model/userSchemas.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import { sendOtpEmail } from "../utils/sendEmail.utils.js";
+import sendEmail from "../utils/sendEmail.utils.js";
 import { createPasswordResetToken } from "../utils/tokenGenrator.js";
 import { isProd } from "../config/env.js";
 
@@ -67,7 +67,14 @@ export const sendOTP = async (req, res) => {
       await user.save();
 
       // Send OTP email AFTER DB success
-      await sendOtpEmail(email, otp);
+      await sendEmail({
+        to:email,
+        subject:"Email Verification",
+        html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <span>${otp}</span>
+            `
+      });
 
       // Issue reset token
       const resetToken = createPasswordResetToken({
@@ -203,7 +210,14 @@ export const sendOTP = async (req, res) => {
     /* ------------------------------
        9. SEND OTP EMAIL + RESPONSE
     ------------------------------ */
-    await sendOtpEmail(user.email, otp);
+    await sendEmail({
+        to:email,
+        subject:"Email Verification",
+        html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <span>${otp}</span>
+            `
+      });
 
     const resetToken = createPasswordResetToken({
       email: user.email,
@@ -375,7 +389,14 @@ export const resendOTP = async (req, res) => {
     /* ------------------------------
        7. Send OTP email
     ------------------------------ */
-    await sendOtpEmail(user.email, otp);
+    await sendEmail({
+        to:email,
+        subject:"Email Verification",
+        html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <span>${otp}</span>
+            `
+      });
 
     /* ------------------------------
        8. Issue reset token

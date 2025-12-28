@@ -1,30 +1,21 @@
-import nodemailer from "nodemailer";
-import { mailFrom, mailPass } from "../config/env.js";
+import {Resend} from "resend";
+import { mailFrom, mailPass, resendApiKey } from "../config/env.js";
 import { backendURL } from "../config/env.js";
 
-const sendVerificationMail = async (email,token)=>{
-  const link = `${process.env.BACKEND_URL}/verifyemail/${token}`;
-
-  const transporter = nodemailer.createTransport({
-    service:"gmail",
-    auth:{
-        user:mailFrom,
-        pass:mailPass
-    }
-  });
-  transporter.sendMail({
+const resend = new Resend(resendApiKey);
+const sendEmail = async ({to,subject,html})=>{
+  try {
+    console.log("email fun hit")
+    const result = await resend.emails.send({
     from:mailFrom,
-    to:email,
-    subject:"Email Verification",
-    html:`
-    <h1>
-    Click the link below to verify email
-    </h1>
-    <p>
-    <a href=${link}>${link}</a>
-    </p>
-   `
-  })
+    to,
+    subject,
+    html
+  });
+  if(result.error) throw new Error(result.error.message);
+  } catch (error) {
+    console.log(error.message)
+  }
 };
 
 export const sendOtpEmail = async(email,otp)=>{
@@ -44,4 +35,4 @@ export const sendOtpEmail = async(email,otp)=>{
     `
   })
 }
-export default sendVerificationMail;
+export default sendEmail;

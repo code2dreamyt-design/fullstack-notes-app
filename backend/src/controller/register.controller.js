@@ -2,9 +2,11 @@ import { User } from "../model/userSchemas.js";
 import bcrypt from "bcrypt"
 import { createEmailVerificationToken} from "../utils/tokenGenrator.js";
 import crypto from "crypto";
-import sendVerificationMail from "../utils/sendEmail.utils.js";
+import sendEmail from "../utils/sendEmail.utils.js";
+import dotenv from "dotenv";
 import { isProd } from "../config/env.js";
 
+dotenv.config();
 const  register = async (req,res)=>{
     const {email,password}= req.body;
 
@@ -20,7 +22,16 @@ const  register = async (req,res)=>{
             verificationToken,
             verficationExpiry:Date.now() + 5*60*1000
         });
-  sendVerificationMail(email,verificationToken);
+        
+        const link = `${process.env.BACKEND_URL}/verifyemail/${verificationToken}`;
+        sendEmail({
+            to:email,
+            subject:"Email Verification",
+            html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <a href=${link}>${link}</a>
+            `
+        });
         const emailVerificationToken = createEmailVerificationToken({email:user.email,_id:user._id});
         res.cookie("emailVerificationToken",emailVerificationToken,{httpOnly:true,
                         secure:isProd,

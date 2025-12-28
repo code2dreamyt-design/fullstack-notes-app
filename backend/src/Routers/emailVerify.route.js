@@ -3,15 +3,15 @@ import bcrypt from "bcrypt"
 import { User } from "../model/userSchemas.js";
 import crypto from "crypto";
 import verifyEmailToken from "../middlewares/emailVerification.middleware.js";
-import sendVerificationMail from "../utils/sendEmail.utils.js";
+import sendEmail from "../utils/sendEmail.utils.js";
 import { createRegisterToken } from "../utils/tokenGenrator.js";
 import { clientURL } from "../config/env.js";
 
 const emailVerifyRoute = express.Router();
-    console.log("verify route hit")
+    
 emailVerifyRoute.get("/:token",async (req , res )=>{
  const {token} = req.params;
-
+console.log("verify route hit")
  if(!token) return res.status(400).json({msg:"token is not provided"});
  const user = await User.findOne(
     {
@@ -56,7 +56,15 @@ emailVerifyRoute.get("/auth/resend",verifyEmailToken,async (req,res)=>{
                 verficationExpiry:Date.now()+5*60*1000
             }}
         );
-        sendVerificationMail(user.email,verificationToken);
+        const link = `${process.env.BACKEND_URL}/verifyemail/${verificationToken}`;
+        sendEmail({
+            to:user.email,
+        subject:"Email Verification",
+            html:`
+            <h1>Click the link to Verify your email<h1/>
+            <p>Link: </p> <a href=${link}>${link}</a>
+            `
+        });
     } catch (error) {
         return res.status(500).json({msg:"Server Error"});
     }
