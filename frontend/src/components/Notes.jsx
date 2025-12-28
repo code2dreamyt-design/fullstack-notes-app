@@ -72,7 +72,7 @@ const Notes = () => {
   };
 
   const handleFav = async (id) => {
-    setLoader(true);
+   
     try {
       await api.patch(
         `/notes/${id}` );
@@ -84,8 +84,6 @@ const Notes = () => {
       );
     } catch (error) {
       console.log(error.response?.data?.msg);
-    } finally {
-      setLoader(false);
     }
   };
 

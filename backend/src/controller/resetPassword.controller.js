@@ -67,7 +67,7 @@ export const sendOTP = async (req, res) => {
       await user.save();
 
       // Send OTP email AFTER DB success
-      await sendEmail({
+      const status = await sendEmail({
         to:email,
         subject:"Email Verification",
         html:`
@@ -75,7 +75,7 @@ export const sendOTP = async (req, res) => {
             <p>Link: </p> <span>${otp}</span>
             `
       });
-
+      if(!status) return res.status(500).json({msg:"Error in sending email"});
       // Issue reset token
       const resetToken = createPasswordResetToken({
         email: user.email,
@@ -210,15 +210,15 @@ export const sendOTP = async (req, res) => {
     /* ------------------------------
        9. SEND OTP EMAIL + RESPONSE
     ------------------------------ */
-    await sendEmail({
+    const status = await sendEmail({
         to:email,
         subject:"Email Verification",
         html:`
-            <h1>Click the link to Verify your email<h1/>
+            <h1>This is your otp to reset Password<h1/>
             <p>Link: </p> <span>${otp}</span>
             `
       });
-
+      if(!status) return res.status(500).json({msg:"Error in sending email"});
     const resetToken = createPasswordResetToken({
       email: user.email,
       _id: user._id
@@ -389,15 +389,15 @@ export const resendOTP = async (req, res) => {
     /* ------------------------------
        7. Send OTP email
     ------------------------------ */
-    await sendEmail({
+    const status = await sendEmail({
         to:email,
         subject:"Email Verification",
         html:`
-            <h1>Click the link to Verify your email<h1/>
+            <h1>This is your otp to reset password<h1/>
             <p>Link: </p> <span>${otp}</span>
             `
       });
-
+      if(!status) return res.status(500).json({msg:"Error in sending email"});
     /* ------------------------------
        8. Issue reset token
     ------------------------------ */

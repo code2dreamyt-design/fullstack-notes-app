@@ -30,17 +30,17 @@ export const sendUpdateOtp  = async (req,res)=>{
             "otpChance.time":new Date(now.getTime()+1*60*1000),
             userId:req.user._id
         });
-        await sendEmail({
+       const status = await sendEmail({
         to:email,
         subject:"Email Verification",
         html:`
-            <h1>Click the link to Verify your email<h1/>
+            <h1>This is your otp to reset Password<h1/>
             <p>Link: </p> <span>${otp}</span>
             `
-      });
-        return res.status(200).json({ msg: "Otp has been sent" });
-
-        console.log(result)    
+      }); 
+      if(!status) return res.status(500).json({msg:"Error in sending email ! try again"});
+       return res.status(200).json({ msg: "Otp has been sent" });
+        
         }else{
             if(otpDoc.otpExp.getTime()>now.getTime()){
                 return res.status(409).json({msg:`Valid Email Exists`});
@@ -79,15 +79,16 @@ export const sendUpdateOtp  = async (req,res)=>{
             if(result.matchedCount!==1){
                 return res.status(500).json({msg:"Server error"});
             }
-            await sendEmail({
+          const status =  await sendEmail({
             to:email,
             subject:"Email Verification",
             html:`
-            <h1>Click the link to Verify your email<h1/>
+            <h1>This is your otp to reset Password<h1/>
             <p>Link: </p> <span>${otp}</span>
             `
       });
-            return res.status(200).json({msg:"Otp Has been sent"});
+            if(status) return res.status(200).json({ msg: "Otp has been sent" });
+            else return res.status(500).json({msg:"Error in sending email ! try again"})
         }
         
     } catch (error) {

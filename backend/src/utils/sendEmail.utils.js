@@ -1,6 +1,5 @@
 import {Resend} from "resend";
-import { mailFrom, mailPass, resendApiKey } from "../config/env.js";
-import { backendURL } from "../config/env.js";
+import { mailFrom,resendApiKey } from "../config/env.js";
 
 const resend = new Resend(resendApiKey);
 const sendEmail = async ({to,subject,html})=>{
@@ -12,27 +11,13 @@ const sendEmail = async ({to,subject,html})=>{
     subject,
     html
   });
+  console.log("Result crossed");
+  if(result.data?.id) return true;
   if(result.error) throw new Error(result.error.message);
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
+    return false;
   }
 };
 
-export const sendOtpEmail = async(email,otp)=>{
-  const transporter = nodemailer.createTransport({
-    service:"gmail",
-    auth:{
-      user:mailFrom,
-      pass:mailPass
-    }
-  });
-  transporter.sendMail({
-    from:mailFrom,
-    to:email,
-    subject:"OTP to reset password",
-    html:`
-    <p> OTP to reset your password is ${otp}</p>
-    `
-  })
-}
 export default sendEmail;
