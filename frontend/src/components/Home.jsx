@@ -1,19 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/api';
+import Loader from './Loader';
 const Home = () => {
   const navigate = useNavigate();
-
+const [loader,setLoader] = useState(true);
   const checkMe = async () => {
     try {
       const response = await api.post('/login/checkme', {});
-
-
-      
         navigate("/notes");
         console.log(response.data?.msg);
     
     } catch (error) {
+      setLoader(false);
       console.log(error.response.status);
       console.log(error.response?.data?.msg)
     }
@@ -24,7 +23,9 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center px-4">
+    <>
+    {loader&&<Loader/>}
+     <div className="w-full min-h-screen flex justify-center items-center px-4">
       <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl flex flex-col items-center">
 
         {/* TITLE */}
@@ -62,6 +63,8 @@ const Home = () => {
 
       </div>
     </div>
+    </>
+   
   );
 };
 
