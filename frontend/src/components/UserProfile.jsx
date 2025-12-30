@@ -45,7 +45,7 @@ const UserProfile = ({ makeLogout }) => {
         <button
           title="Logout"
           onClick={makeLogout}
-          className="h-8 w-8 flex items-center justify-center rounded-full hover:shadow-[0px_0px_20px_white]"
+          className="h-8 w-8 flex items-center justify-center rounded-full hover:shadow-[0px_0px_20px_white] cursor-pointer"
         >
           <i className="fa-solid fa-right-from-bracket text-lg" />
         </button>

@@ -8,6 +8,8 @@ const Addnotes = ({
   setEdit,
   edit,
   note,
+  notes,
+  setNotes
 }) => {
   const {
     register,
@@ -15,27 +17,43 @@ const Addnotes = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { title: "" },
+    defaultValues: { title: "" ,
+      content:""
+    },
   });
 
 
 const submitNote = async (data) => {
+  const oldNotes =[ ...notes];
   try {
     const endpoint = edit && note
       ? `/notes/${note._id}`
       : "/notes";
-
-    const response = edit && note
-      ? await api.put(endpoint, data)
-      : await api.post(endpoint, data);
-
-    if (response.status === 200 || response.status === 201) {
-      getNotes();
-      reset({ title: "", content: "" });
-      setIsExpanded(false);
-      setEdit(false);
-    }
+      console.log(note)
+    
+        if(edit && note){
+          const newNotes = notes.filter((n)=>n._id!==note._id);
+          const modifiedNote = {...note,title:data.title,content:data.content};
+          console.log(modifiedNote)
+          console.log(newNotes);
+          newNotes.unshift(modifiedNote);
+           console.log(newNotes);
+          setNotes(newNotes);
+          await api.put(endpoint, data);
+          reset({ title: "", content: "" });
+          setIsExpanded(false);
+          setEdit(false);
+        }else{
+         const response= await api.post(endpoint, data);
+        
+          if (response.status === 200 || response.status === 201) {
+            getNotes();
+            reset({ title: "", content: "" });
+            setIsExpanded(false);
+            setEdit(false);
+           }}
   } catch (error) {
+    setNotes(oldNotes);
     console.error(
       "Submit note failed:",
       error.response?.data || error.message

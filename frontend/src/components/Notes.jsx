@@ -59,13 +59,15 @@ const Notes = () => {
   };
 
   const deleteNote = async (id) => {
-    setPage(0);
+    const oldNotes = [...notes];
+    setNotes((prev) => prev.filter((note) => note._id !== id));
     try {
       const response = await api.delete(`/notes/${id}`);
       console.log(response.data)
-        getNotes();
+       // getNotes();
       
     } catch (error) {
+      setNotes(oldNotes)
       console.log(error.response?.data?.msg);
       console.log(error.response.status);
     }
@@ -74,17 +76,18 @@ const Notes = () => {
   const handleFav = async (id) => {
    
     try {
-      await api.patch(
-        `/notes/${id}` );
-
+      if(id){
       setNotes((prev) =>
         prev.map((note) =>
           note._id === id ? { ...note, isFav: !note.isFav } : note
         )
       );
+   }else{return}
+      await api.patch(
+        `/notes/${id}` );
     } catch (error) {
       console.log(error.response?.data?.msg);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -176,12 +179,18 @@ const handleNext = () => {
               edit={edit}
               setEdit={setEdit}
               setIsExpanded={setIsExpanded}
+              notes={notes}
+              setNotes={setNotes}
             />
           </div>
         )}
 
         {/* ================= NOTES GRID ================= */}
+        <span className="font-bold text-2xl">
+            {notes?.length>0?"Your Notes":""}
+          </span>
         <div className="w-[95%] mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          
           {notes.length > 0 ? (
             notes.map((note, index) => (
               <div
