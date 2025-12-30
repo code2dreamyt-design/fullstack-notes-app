@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import dummyProf from '/images/profile.png';
 import Profile from './Profile';
-import Loader from './Loader';
-import api from '../api/api';
+import api from '../api/api'
+import Loader from './Loader'
+import { useContext } from 'react'
+import { AuthContext } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom';
 
-const UserProfile = ({ makeLogout }) => {
+const UserProfile = () => {
+  
+  const {setIsAuth} = useContext(AuthContext);
+  
+ // const [isSmall,setIsSmal] = useState(false);
+  const navigate = useNavigate();
   const [user, setUser] = useState({});
   const [profile, setProfile] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -20,14 +28,30 @@ const UserProfile = ({ makeLogout }) => {
       setLoader(false);
     }
   };
-
+const makeLogout = async ()=>{
+    setLoader(true);
+    try {
+      const response  = await api.get("/logout");
+      
+       setIsAuth(false);
+        navigate("/login");
+        console.log(response.data?.msg);
+      
+    } catch (error) {
+      setLoader(false)
+      console.log(error.response.status)
+      console.log(error.response?.data?.msg)
+    }
+  }
   useEffect(() => {
     getProfile();
   }, []);
 
-  if (loader) return <Loader />;
-
   return (
+    <>
+    {
+      loader && <Loader/>
+    }
     <div className="relative flex items-center">
 
       {/* AVATAR BUTTON */}
@@ -70,6 +94,8 @@ const UserProfile = ({ makeLogout }) => {
       )}
 
     </div>
+    </>
+    
   );
 };
 

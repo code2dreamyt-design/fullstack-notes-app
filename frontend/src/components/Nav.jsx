@@ -1,34 +1,18 @@
 //import React, { useState } from 'react'
-import { useContext } from 'react'
-import { AuthContext } from '../contexts/AuthContext'
-import { Link,useNavigate } from 'react-router-dom'
+import { Link} from 'react-router-dom'
 import UserProfile from './UserProfile'
 import toplogo from '/images/noteapplogo.svg'
-import api from '../api/api'
+import { useContext } from 'react'
+import { AuthContext } from '../contexts/AuthContext'
 const Nav = () => {
-  const {isAuth,setIsAuth} = useContext(AuthContext);
   
- // const [isSmall,setIsSmal] = useState(false);
-  const navigate = useNavigate();
+  const {isAuth} = useContext(AuthContext);
   //console.log(user)
   // const toggleMenu = ()=>{
   //   setIsSmal(!isSmall);
   //   //console.log(isSmall)
   // }
-  const makeLogout = async ()=>{
-    
-    try {
-      const response  = await api.get("/logout");
-      
-       setIsAuth(false);
-        navigate("/login");
-        console.log(response.data?.msg);
-      
-    } catch (error) {
-      console.log(error.response.status)
-      console.log(error.response?.data?.msg)
-    }
-  }
+  
   return (
     <div className={`w-full h-10 md:h-12 flex justify-between items-center font-bold shadow-[0px_4px_30px_black] rounded-xl text-amber-200 px-4`}>
       
@@ -49,7 +33,7 @@ const Nav = () => {
 
       <div className='h-15  flex items-center'>
         {
-          isAuth ? <UserProfile makeLogout={makeLogout}/>:''
+          isAuth ? <UserProfile/>:''
           
         }
           
